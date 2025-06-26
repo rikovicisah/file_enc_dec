@@ -43,8 +43,54 @@ void print_usage(const char *prog) {
 
 //TODO uraditi funkciju koja ce sa ucitane putanje uzeti fajl ucitati ga binarno.
 unsigned char *ucitaj_fajl(const char *putanja, size_t *velicina) {
-    return 'a';
+    FILE *f = fopen(putanja, "rb");
+    if (!f) {
+        fprintf(stderr, "Greška pri otvaranju fajla '%s': %s\n", putanja, strerror(errno));
+        return NULL;
+    }
+
+     if (fseek(f, 0, SEEK_END) != 0) {
+        fprintf(stderr, "Greška pri fseek().\n");
+        fclose(f);
+        return NULL;
+    }
+
+    long duzina = ftell(f);
+
+
+    if (duzina < 0) {
+        fprintf(stderr, "Greška pri ftell().\n");
+        fclose(f);
+        return NULL;
+    }
+
+    rewind(f);  // vrati se na početak
+
+    // alociraj memoriju
+    unsigned char *buffer = malloc(duzina);
+    if (!buffer) {
+        fprintf(stderr, "Nema dovoljno memorije.\n");
+        fclose(f);
+        return NULL;
+    }
+
+    size_t procitano = fread(buffer, 1, duzina, f);
+    if (procitano != duzina) {
+        fprintf(stderr, "Nisu svi bajtovi pročitani!\n");
+        free(buffer);
+        fclose(f);
+        return NULL;
+    }
+
+    fclose(f);
+    *velicina = duzina;
+    return buffer;
 }
+
+
+
+
+
 
 int main(int argc, char *argv[]){
 
