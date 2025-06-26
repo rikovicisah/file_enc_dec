@@ -28,7 +28,8 @@
 int opt, mode = -1;
 char *hexkey = NULL;
 
-//dovrseno 
+
+//pravilo koristenja aplikacije
 void print_usage(const char *prog) {
     fprintf(stderr,
         "Upotreba 1: %s -e|-d -k <hex_ključ> <ulaz> <izlaz>\n"
@@ -40,8 +41,7 @@ void print_usage(const char *prog) {
         prog, prog);
 }
 
-
-//TODO uraditi funkciju koja ce sa ucitane putanje uzeti fajl ucitati ga binarno.
+//ucitavanje fajla u binarnom formatu
 unsigned char *ucitaj_fajl(const char *putanja, size_t *velicina) {
     FILE *f = fopen(putanja, "rb");
     if (!f) {
@@ -89,10 +89,10 @@ unsigned char *ucitaj_fajl(const char *putanja, size_t *velicina) {
 
 
 
-
-
-
 int main(int argc, char *argv[]){
+    size_t velicina;
+    char *ulazni_fajl = argv[1];
+    char *izlazni_fajl = argv[2];
 
     if (sodium_init() < 0) {
         printf("Test");
@@ -101,6 +101,17 @@ int main(int argc, char *argv[]){
 
     print_usage("neki tekst");
 
+    unsigned char *podaci = ucitaj_fajl(ulazni_fajl, &velicina);
+    if (!podaci) {
+        fprintf(stderr, "Ne mogu učitati fajl '%s'\n", ulazni_fajl);
+        return 1;
+    }
+
+    printf("Učitano %zu bajtova iz fajla '%s'.\n", velicina, ulazni_fajl);
+
+
+    printf("ime ulaznog fajla je : %s\n", ulazni_fajl);
+    printf("ime izlaznog fajla je : %s\n", izlazni_fajl);
 
     return 0;
 }
